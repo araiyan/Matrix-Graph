@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#define UNVISITED 0
+
 void Assert(bool print, std::string message);
 
 class Graph

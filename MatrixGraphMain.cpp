@@ -3,8 +3,6 @@
 #include <vector>
 #include "MatrixGraph.h"
 
-#define UNVISITED 0
-
 void setAllEdges(Graph* G);
 void resetMark(Graph* G);
 void findAllPaths(Graph* G, int v1, int v2, std::vector<int>& stack);
