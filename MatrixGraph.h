@@ -1,12 +1,14 @@
+#ifndef MATRIX_GRAPH_H
+#define MATRIX_GRAPH_H
+
 #include <iostream>
+#include <iomanip>
 #include <string>
 #include <vector>
 
-#define UNVISITED 0
-
 void Assert(bool print, std::string message);
 
-class Graph 
+class Graph
 {
 private:
     void operator =(const Graph&) {} // Protect assignment
@@ -36,14 +38,14 @@ public:
     virtual int next(int v1, int v2) = 0;
 };
 
-class Graphm : public Graph 
+class Graphm : public Graph
 {
 private:
     int numVertex, numEdge;
     int** matrix;
     int* mark;
 public:
-    Graphm(int numVert) 
+    Graphm(int numVert)
     {
         int i;
         numVertex = numVert;
@@ -70,7 +72,7 @@ public:
     int n() { return numVertex; }
     int e() { return numEdge; }
 
-    void setEdge(int v1, int v2, int wgt) 
+    void setEdge(int v1, int v2, int wgt)
     {
         Assert(wgt > 0, "Illegal weight value");
         if (matrix[v1][v2] == 0)
@@ -106,80 +108,42 @@ public:
 
 };
 
-void setAllEdges(Graph* G);
-void resetMark(Graph* G);
-void findAllPaths(Graph* G, int v1, int v2, std::vector<int>& stack);
-void printStack(std::vector<int>& stack);
-
-int main()
+void printAdjacencyMatrix(Graph* G)
 {
-    const int startVertex = 3, endVertex = 6;
-
-    Graphm matrixGraph(6);
-    std::vector<int> stack;
-
-    setAllEdges(&matrixGraph);
-    std::cout << "All the paths from vertex " << startVertex << " to vertex "
-        << endVertex << " are as follows : " << std::endl << std::endl;
-    findAllPaths(&matrixGraph, startVertex - 1, endVertex - 1, stack);
-
-}
-
-void setAllEdges(Graph* G)
-{
-    G->setEdge(0, 1, 1);
-    G->setEdge(1, 3, 1);
-    G->setEdge(2, 0, 1);
-    G->setEdge(2, 1, 1);
-    G->setEdge(2, 4, 1);
-    G->setEdge(3, 5, 1);
-    G->setEdge(4, 1, 1);
-    G->setEdge(4, 3, 1);
-    G->setEdge(4, 5, 1);
-}
-
-void resetMark(Graph* G)
-{
+    std::cout << std::left;
+    std::cout << std::setw(5) << " ";
     for (int i = 0; i < G->n(); i++)
-        G->setMark(i, 0);
-}
-
-void findAllPaths(Graph* G, int v1, int v2, std::vector<int>& stack)
-{
-    G->setMark(v1, 1);
-
-    for (int w = G->first(v1); w < G->n(); w = G->next(v1, w))
-    {
-        if (G->getMark(w) == 0)
-        {
-            stack.push_back(v1);
-            G->setMark(w, 1);
-            findAllPaths(G, w, v2, stack);
-            G->setMark(w, 0);
-            if (stack[stack.size() - 1] != v2)
-                stack.pop_back();
-        }
-    }
-    if (v1 == v2)
-        stack.push_back(v1);
-
-    if (!stack.empty() && stack[stack.size() - 1] == v2)
-    {
-        printStack(stack);
-        stack.pop_back();
-    }
-    G->setMark(v1, 0);
-}
-
-void printStack(std::vector<int>& stack)
-{
-    for (int i : stack)
-    {
-        std::cout << i + 1;
-        if(i != stack[stack.size()-1])
-            std::cout << " -> ";
-    }
+        std::cout << std::setw(2) << i + 1;
     std::cout << std::endl;
+    std::cout << "    ----------------" << std::endl;
+
+    for (int i = 0; i < G->n(); i++)
+    {
+        std::cout << " " << i + 1 << " | ";
+        for (int j = 0; j < G->n(); j++)
+        {
+            if (G->weight(i, j) == UNVISITED)
+                std::cout << std::setw(2) << " ";
+            else
+                std::cout << std::setw(2) << G->weight(i, j);
+        }
+        std::cout << std::endl;
+    }
+}
+
+void printAdjacencyList(Graph* G)
+{
+
+    for (int i = 0; i < G->n(); i++)
+    {
+        std::cout << " " << i + 1 << " |";
+        for (int j = 0; j < G->n(); j++)
+        {
+            if (G->weight(i, j) != UNVISITED)
+                std::cout << " -> | " << j + 1 << " |";
+        }
+        std::cout << std::endl;
+    }
 }
 
 void Assert(bool print, std::string message)
@@ -187,3 +151,5 @@ void Assert(bool print, std::string message)
     if (!print)
         throw message;
 }
+
+#endif
